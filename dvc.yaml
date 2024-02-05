@@ -1,0 +1,35 @@
+stages:
+  features:
+    cmd: python3 scripts/data_processing/get_features.py data/train.csv
+    deps:
+    - data/train.csv
+    - scripts/data_processing/get_features.py
+    outs:
+    - data/stage1
+  prepared:
+    cmd: python3 scripts/data_processing/prepared.py data/stage1/train.csv
+    deps:
+    - data/stage1/train.csv
+    - scripts/data_processing/prepared.py
+    outs:
+    - data/stage2
+  train:
+    cmd: python3 scripts/model_learning/ml.py data/stage2/train.csv model.pkl
+    deps:
+    - data/stage2/train.csv
+    - scripts/model_learning/ml.py
+    params:
+    - split.split_ratio
+    - train.seed
+    - train.max_iter
+    outs:
+    - models/model.pkl
+  evaluate:
+    cmd: python3 scripts/model_learning/evaluate.py data/stage2/train.csv models/model.pkl
+    deps:
+    - data/stage2/train.csv
+    - models/model.pkl
+    - scripts/model_learning/evaluate.py
+    metrics:
+    - evaluate/score.json:
+        cache: false
