@@ -1,0 +1,6 @@
+[core]
+    remote = ssh-storage
+['remote "ssh-storage"']
+    url = ssh://lnc@192.168.56.106/opt/datasets
+    user = lnc
+    port = 22
