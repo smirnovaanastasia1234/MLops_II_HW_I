@@ -1,0 +1,77 @@
+schema: '2.0'
+stages:
+  features:
+    cmd: python3 scripts/data_processing/get_features.py data/train.csv
+    deps:
+    - path: data/train.csv
+      hash: md5
+      md5: 6d274cfee2b0b41385c8f1ab5dcc8b97
+      size: 12145257
+    - path: scripts/data_processing/get_features.py
+      hash: md5
+      md5: 6984b4b25f863eb65b057a67513f113d
+      size: 365
+    outs:
+    - path: data/stage1
+      hash: md5
+      md5: dc8315a78c5fbfc580134ed8993ef641.dir
+      size: 12145257
+      nfiles: 1
+  prepared:
+    cmd: python3 scripts/data_processing/prepared.py data/stage1/train.csv
+    deps:
+    - path: data/stage1/train.csv
+      hash: md5
+      md5: 6d274cfee2b0b41385c8f1ab5dcc8b97
+      size: 12145257
+    - path: scripts/data_processing/prepared.py
+      hash: md5
+      md5: 1cdab5cbc6f4d139afc5c47d7ee156d1
+      size: 365
+    outs:
+    - path: data/stage2
+      hash: md5
+      md5: dc8315a78c5fbfc580134ed8993ef641.dir
+      size: 12145257
+      nfiles: 1
+  train:
+    cmd: python3 scripts/model_learning/ml.py data/stage2/train.csv model.pkl
+    deps:
+    - path: data/stage2/train.csv
+      hash: md5
+      md5: 6d274cfee2b0b41385c8f1ab5dcc8b97
+      size: 12145257
+    - path: scripts/model_learning/ml.py
+      hash: md5
+      md5: d796cfac10cdc0c934fd9f4c57d54359
+      size: 2099
+    params:
+      params.yaml:
+        split.split_ratio: 0.3
+        train.max_iter: 1500
+        train.seed: 42
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: d63809133f28bdfdcc66ad727d87db7c
+      size: 1317815
+  evaluate:
+    cmd: python3 scripts/model_learning/evaluate.py data/stage2/train.csv models/model.pkl
+    deps:
+    - path: data/stage2/train.csv
+      hash: md5
+      md5: 6d274cfee2b0b41385c8f1ab5dcc8b97
+      size: 12145257
+    - path: models/model.pkl
+      hash: md5
+      md5: d63809133f28bdfdcc66ad727d87db7c
+      size: 1317815
+    - path: scripts/model_learning/evaluate.py
+      hash: md5
+      md5: 63502dffde8366892fe880b13c1113fa
+      size: 1795
+    outs:
+    - path: evaluate/score.json
+      hash: md5
+      md5: 8d400e61f2c758fc4d09b1dccb24c92c
+      size: 29
